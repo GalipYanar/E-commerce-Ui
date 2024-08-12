@@ -20,7 +20,7 @@ function submitForm() {
         }
         return response.json()
     }).then(data => {
-        localStorage.setItem("jwtToken", data.token)
+        localStorage.setItem("jwtToken", data.token) //kullanıcı giriş yaparken token'ı kaydediyoruz. bu sayede tokenda user ise indez.html, admin ise admin html e yönleniyor
         localStorage.setItem("customerId", data.customerId)
 
         const role = parseJwt(data.token)
