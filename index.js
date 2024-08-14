@@ -93,6 +93,7 @@ function displayProducts(products){
 }
 
 function removeFromCart(index){
+    
     cartItems.splice(index, 1) [0];
     updateCart();
     updateOrderButtonVisiblity();
@@ -100,8 +101,9 @@ function removeFromCart(index){
 
 
 function addToCart(product) {
-    
-    if(product.unitInStock > 0) {
+    console.log(cartItems);
+    const productCountInCart = cartItems.filter(item => item.id === product.id).length;
+    if(product.unitInStock > 0 && productCountInCart < product.unitInStock) {
         cartItems.push(product);
         updateCart();
         updateOrderButtonVisiblity();
