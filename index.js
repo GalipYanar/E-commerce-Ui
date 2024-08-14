@@ -4,18 +4,27 @@ const BASE_IMAGE_PATH = "/Users/Admin/Desktop/asd/E-commerce/"
 let cartItems = [];
 
 async function fetchCategories(){
-    const response = await fetch(BASE_PATH + "category", {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + jwtToken
+    try{
+        const response = await fetch(BASE_PATH + "category", {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + jwtToken
+            }
+        });
+    
+        const data = await response.json();
+        displayCategories(data)
+    }catch (error){
+        console.log("error fetching categories: ", error);
+        if(error.status == 403){
+            window.location.href = "login.html"
         }
-    });
-
-    const data = await response.json();
-    displayCategories(data)
+    }
+    
 }
 
+//seçilen kategorinin ürünlerini backende istek atıp çekiyor. api-call
 async function fetchProductByCategory(categoryId){
     const endPointUrl = BASE_PATH + "product/category/" + categoryId;
     try{
@@ -33,10 +42,14 @@ async function fetchProductByCategory(categoryId){
         const data= await response.json();
         displayProducts(data)
     }catch(error){
-        console.error("Error fetching products: ", error)
+        console.error("Error fetching products: ", error);
+        if(error.status == 403){
+            window.location.href = "login.html"
+        }
     }
 }
 
+//categorySelect id sini alıp, forEach ile category içerisinde dönüp mevcut olan nesneler için option ile yeni nesne oluşturuyor
 function displayCategories(categories) {
     const categorySelect = document.getElementById("categorySelect");
     categorySelect.innerHTML = '';
@@ -49,6 +62,7 @@ function displayCategories(categories) {
     });
 }
 
+//seçtiğimiz kategorinin ürünlerini ekrana basma
 function displayProducts(products){
     const productList = document.getElementById("productList");
     productList.innerHTML ='';
@@ -84,13 +98,6 @@ function removeFromCart(index){
     updateOrderButtonVisiblity();
 }
 
-function updateOrderButtonVisiblity(){
-    if(cartItems.length > 0){
-        document.getElementById("orderButton").style.display = "block";
-    }else {
-        document.getElementById("orderButton").style.display = "none";  
-    }
-}
 
 function addToCart(product) {
     
@@ -124,12 +131,28 @@ function updateCart(){
     }); 
 }
 
+function updateOrderButtonVisiblity(){
+    if(cartItems.length > 0){
+        document.getElementById("orderButton").style.display = "block";
+    }else {
+        document.getElementById("orderButton").style.display = "none";  
+    }
+}
+
+// sayfa yüklendiğinde ilk çalışan kod burası, html yüklendikten sonra category'leri çekiyor
 document.addEventListener("DOMContentLoaded", async function() {
     updateOrderButtonVisiblity();
     await fetchCategories();
-    
+
     const categorySelect = document.getElementById("categorySelect");
+    
+    // İlk kategoriyi seç ve ürünleri getir
+    if (categorySelect.options.length > 0) {
+        categorySelect.selectedIndex = 0;
+        await fetchProductByCategory(categorySelect.value);
+    }
+
     categorySelect.addEventListener("change", async function(){
         await fetchProductByCategory(categorySelect.value);
     });
-})
+});
