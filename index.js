@@ -78,11 +78,40 @@ function displayProducts(products){
     });
 }
 
+function removeFromCart(index){
+    cartItems.splice(index, 1) [0];
+    updateCart();
+}
+
 function addToCart(product) {
+    
     if(product.unitInStock > 0) {
         cartItems.push(product);
         updateCart();
     }
+}
+
+function updateCart(){
+    const cart = document.getElementById("cart");
+    cart.innerHTML = '';
+
+    cartItems.forEach((item, index) =>{
+        const cartItemElement = document.createElement("li");
+        cartItemElement.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+        const itemNameElement = document.createElement("span");
+        cartItemElement.textContent = item.name + " - " +item.price;
+        const deleteButton = document.createElement("button");
+        deleteButton.classList.add("btn", "btn-danger");
+        deleteButton.innerHTML = '<i class="bi bi-trash"></i>';
+        
+        deleteButton.onclick = function (){
+            removeFromCart(index);
+        };
+
+        cartItemElement.appendChild(itemNameElement);
+        cartItemElement.appendChild(deleteButton);
+        cart.appendChild(cartItemElement);
+    }); 
 }
 
 document.addEventListener("DOMContentLoaded", async function() {
