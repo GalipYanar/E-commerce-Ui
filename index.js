@@ -1,4 +1,5 @@
 const jwtToken = localStorage.getItem("jwtToken"); //login ekranında set ettiğimiz token ı burada çekip kullanıyoruz
+const customerId = localStorage.getItem("customerId");
 const BASE_PATH = "http://localhost:8080/"
 const BASE_IMAGE_PATH = "/Users/Admin/Desktop/asd/E-commerce/"
 let cartItems = [];
@@ -117,8 +118,10 @@ function updateCart(){
     cartItems.forEach((item, index) =>{
         const cartItemElement = document.createElement("li");
         cartItemElement.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+
         const itemNameElement = document.createElement("span");
-        cartItemElement.textContent = item.name + " - " +item.price;
+        cartItemElement.textContent = item.name + " - " + item.price;
+
         const deleteButton = document.createElement("button");
         deleteButton.classList.add("btn", "btn-danger");
         deleteButton.innerHTML = '<i class="bi bi-trash"></i>';
@@ -131,6 +134,59 @@ function updateCart(){
         cartItemElement.appendChild(deleteButton);
         cart.appendChild(cartItemElement);
     }); 
+}
+
+function orderNow() {
+    console.log("orderNow : ", cartItems)
+
+    const idCountMap = new Map();
+    cartItems.forEach(item => {
+        const { id } = item;
+
+        //Check if the id exists in the map
+        if (idCountMap.has(id)) {
+            //if it exists, increment the count
+            idCountMap.set(id, idCountMap.get(id) + 1);
+        } else {
+            //if it doesn't exist, add it to the map
+            idCountMap.set(id, 1);
+        }
+    })
+
+    idCountMap.forEach((count, id) => {
+        console.log("id : ", id, " count : ", count)
+    });
+
+    var orderProductInfoList = [...idCountMap].map(([productId, quantity]) => ({ productId, quantity }));
+    console.log("orderProductInfoList : ", orderProductInfoList)
+
+    fetch(BASE_PATH + "order", {
+        method: 'POST',
+        body: JSON.stringify({
+            customerId,
+            orderList: orderProductInfoList
+        }),
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwtToken
+        }
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error("Order isteği başarısız durum kodu : " + response.status)
+        }
+        return response.json()
+    }).then(data => {
+        console.log(data)
+        clearCart();
+    })
+}
+
+function clearCart(){
+    cartItems = [];
+    updateCart();
+    updateOrderButtonVisiblity;
+    const categorySelect = document.getElementById("categorySelect");
+    fetchProductByCategory(categorySelect.value);
 }
 
 function updateOrderButtonVisiblity(){

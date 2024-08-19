@@ -22,15 +22,86 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="login.html">Logout</a>
+                    
                     </li>
                 </ul>
             </div>
         </nav>
     </header>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3>Admin Panel</h3>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-success mb-3" data-bs-toggle="modal" 
+                     data-bs-target="#addProductModal">Add Product</button>
+                     <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Category Id</th>
+                                <th>Image</th>
+                                <th>Active</th>
+                                <th>Process</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productTableBody">
 
+                        </tbody>
+                     </table>
+                </div>
+            </div>
 
+        </div>
+    </div>
+</div>
 
-
+<!-- add product modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Add Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" enctype="multipart/form-data">
+                <form id="addProductForm">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="productName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="number" class="form-control" id="productPrice" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="productUnitInStock" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoryId" class="form-label">Category Id</label>
+                        <input type="number" class="form-control" id="productCategoryId" required>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <label for="productActive" class="form-check-label">Active</label>
+                        <input type="checkbox" class="form-check-input" id="productActive" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productActive" class="form-label">Image</label>
+                        <input type="file" class="form-control" id="productImage" accept="image/*" required>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="addProduct()">Add Product</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
