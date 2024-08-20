@@ -67,10 +67,13 @@ function displayCategories(categories) {
 function displayProducts(products){
     const productList = document.getElementById("productList");
     productList.innerHTML ='';
+    // ürünleri yan yana göstermme
+    productList.style.display = "flex";
+    productList.style.flexWrap = "wrap";
 
     products.forEach(product =>{
         const productCard = document.createElement("div");
-        productCard.classList.add("co-md-6", "mb-4");
+        productCard.classList.add("co-md-2", "mb-4");
 
         const productImage = document.createElement("img");
         productImage.src = BASE_IMAGE_PATH + product.image
