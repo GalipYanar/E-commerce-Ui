@@ -58,7 +58,7 @@ function displayCategories(categories) {
     categories.forEach(category => { //forEach ile categories içerisinde dönüp value ile id leri alıp, text ile o id ye ait olan categoriyi ekrana basıyor
         const option = document.createElement("option");
         option.value = category.id;
-        option.text = category.categoryEnum;
+        option.text = category.name;
         categorySelect.appendChild(option);
     });
 }
