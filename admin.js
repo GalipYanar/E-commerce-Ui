@@ -1,6 +1,6 @@
 const jwtToken = localStorage.getItem('jwtToken');
 const BASE_PATH = "http://localhost:8080/"
-const BASE_IMAGE_PATH = "/Users/Admin/Desktop/asd/E-commerce/"
+const BASE_IMAGE_PATH = "/Users/Admin/Desktop/E-commerce/"
 
 
 async function addProduct() {
@@ -22,6 +22,8 @@ async function addProduct() {
         categoryId: productCategoryId,
         active: productActive
     };
+
+    
 
     formData.append('product', new Blob([JSON.stringify(productData)], { type: 'application/json'}));
     console.log("post product: ")
