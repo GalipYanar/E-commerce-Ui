@@ -36,6 +36,45 @@ function displayCategories(categories) {
     });
 }
 
+let selectedCategorytId = null;
+function showDeleteCategoryModal(categoryId){
+    selectedCategorytId = categoryId
+    const deleteCategoryModal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
+    deleteCategoryModal.show();
+}
+
+document.getElementById('confirmDeleteButton').addEventListener('click', async () =>{
+    if(selectedCategorytId){
+        const isDeleted = await deleteCategory(selectedCategorytId);
+        if(isDeleted){
+            const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteCategoryModal'));
+            deleteModal.hide();
+        }
+        selectedProductId = null;
+    }
+});
+
+async function deleteCategory(categoryId) {
+    try {
+        const response = await fetch(BASE_PATH + "category/delete/" + categoryId, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + jwtToken
+            }
+        });
+
+        if(!response.ok){
+            throw new Error("Category delete failed : " + response.status);
+        }
+
+        await getAllCategory();
+        return true;
+
+    }catch (error) {
+        console.log('Error', error);
+    }
+}
+
 function getCategoryAndShowModal(categoryId) {
     updateCategory(categoryId);
 }
@@ -52,7 +91,8 @@ function updateCategory(categoryId){
             throw new Error("Category fetching failed: " + response.status)
         }
         return response.json();
-    }).then(data => {
+    }).then(data => { 
+        //update e tıkladığımızda gelen modalın içinin dolu olması için, backend'den aldığı değerleri set ediyoruz
         document.getElementById('updateCategoryId').value = data.id;
         document.getElementById('updateCategoryName').value = data.name;
         
@@ -64,8 +104,7 @@ function updateCategory(categoryId){
     });
 
 }
-
-document.addEventListener("DOMContentLoaded", async () => {
+    document.addEventListener("DOMContentLoaded", async () => {
     await getAllCategory();
     //category add, form listener
     document.getElementById("addCategoryBtn").addEventListener("click", function () {
@@ -91,6 +130,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.error('Error:', error);
         })
     })
+
 
     document.getElementById("updateCategoryBtn").addEventListener("click", function () {
         const categoryId = document.getElementById('updateCategoryId').value;

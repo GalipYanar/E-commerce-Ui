@@ -98,7 +98,7 @@ function showDeleteProductModal(productId){
     deleteProductModal.show();
 }
 
-//seçilen ürün id'si silindiyse modalı kapatıyoruz
+//açılan modalda delete butonuna tıklandığında, seçilen ürün id'si silindiyse modalı kapatıyoruz
 document.getElementById('confirmDeleteButton').addEventListener('click', async () =>{
    if(selectedProductId){
     const isDeleted = await deleteProduct(selectedProductId);
@@ -107,7 +107,7 @@ document.getElementById('confirmDeleteButton').addEventListener('click', async (
         deleteModal.hide();
     }
     selectedProductId = null;
-   } 
+    } 
 });
 
 //backend'e delete isteği atıp seçtiğimiz ürünü siliyoruz

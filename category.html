@@ -53,7 +53,7 @@
             <tbody id="categoryTableBody"></tbody>
         </table>
     </div>
-
+    <!--update modal-->
     <div class="modal fade" id="updateCategoryModal" tabindex="-1" role="dialog"
     aria-labelledby="updateCategoryModalLabel">
         <div class="modal-dialog" role="document">
@@ -77,6 +77,26 @@
             </div>
         </div>
     </div>
+
+    <!--delete modal-->
+    <div class="modal fade" id="deleteCategoryModal" tabindex="-1" role="dialog" 
+        aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteCategoryModalLabel">Confirm Category Deletion</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure delete this category?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" id="confirmDeleteButton">Delete!</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
    
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
