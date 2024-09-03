@@ -71,7 +71,8 @@ async function deleteCategory(categoryId) {
         return true;
 
     }catch (error) {
-        console.log('Error', error);
+        showFailAlert("Category delete failed");
+        console.log('Error', error.message);
     }
 }
 
@@ -98,17 +99,96 @@ function updateCategory(categoryId){
         
         const updateCategoryModal = new bootstrap.Modal(document.getElementById('updateCategoryModal'));
         updateCategoryModal.show();
+        
 
     }).catch(error => {
         console.error('Error: ', error);
     });
 
 }
-    document.addEventListener("DOMContentLoaded", async () => {
+
+
+
+document.getElementById("updateCategoryBtn").addEventListener("click", function () {
+    const categoryId = document.getElementById('updateCategoryId').value;
+    const categoryName = document.getElementById('updateCategoryName').value;
+
+    fetch(BASE_PATH + "category/" + categoryId, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwtToken
+        },
+        body: JSON.stringify({
+            id: categoryId,
+            name: categoryName
+        })
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error("Category update failed, status: " + response.status);
+        }
+        return response.json();
+    }).then(data => {
+        // Güncellenen kategorileri yeniden yükleyin
+        getAllCategory();
+
+        // Modal'ı kapat
+        const updateCategoryModal = bootstrap.Modal.getInstance(document.getElementById('updateCategoryModal'));
+        updateCategoryModal.hide();
+
+        showSuccessAlert("Category updated successfully"); // Doğru mesaj
+    }).catch(error => {
+        console.error('Error: ', error);
+    });
+});
+
+function showSuccessAlert(message) {
+    let alert = document.getElementById('success-alert');
+    alert.style.display = 'block';
+    alert.style.opacity = 1;
+
+    let alertMessage = document.getElementById('successAlertMessage');
+    alertMessage.textContent = message;
+
+    setTimeout(() => {
+        let opacity = 1;
+        let timer = setInterval(() => {
+            if (opacity <= 0.1) {
+                clearInterval(timer);
+                alert.style.display = 'none';
+            }
+            alert.style.opacity = opacity;
+            opacity -= opacity * 0.01;
+        }, 50);
+    }, 3000);
+}
+
+function showFailAlert(message) {
+    let alert = document.getElementById('fail-alert');
+    alert.style.display = 'block';
+    alert.style.opacity = 1;
+
+    let alertMessage = document.getElementById('failAlertMessage');
+    alertMessage.textContent = message;
+
+    setTimeout(() => {
+        let opacity = 1;
+        let timer = setInterval(() => {
+            if (opacity <= 0.1) {
+                clearInterval(timer);
+                alert.style.display = 'none';
+            }
+            alert.style.opacity = opacity;
+            opacity -= opacity * 0.01;
+        }, 50);
+    }, 3000);
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
     await getAllCategory();
-    //category add, form listener
+
+    // Category add, form listener
     document.getElementById("addCategoryBtn").addEventListener("click", function () {
-        //form  verileri al
         const categoryName = document.getElementById("categoryName").value;
         fetch(BASE_PATH + "category/create", {
             method: 'POST',
@@ -121,45 +201,15 @@ function updateCategory(categoryId){
             })
         }).then(response => {
             if (!response.ok) {
-                throw new Error("Category create isteği başarısız durum kodu : " + response.status)
+                throw new Error("Category create isteği başarısız durum kodu : " + response.status);
             }
             return response.json();
         }).then(category => {
             getAllCategory();
+            showAlert("Category added successfully"); // Doğru mesaj
         }).catch(error => {
             console.error('Error:', error);
-        })
-    })
-
-
-    document.getElementById("updateCategoryBtn").addEventListener("click", function () {
-        const categoryId = document.getElementById('updateCategoryId').value;
-        const categoryName = document.getElementById('updateCategoryName').value;
-
-        fetch(BASE_PATH + "category/" + categoryId, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + jwtToken
-            },
-            body: JSON.stringify({
-                id: categoryId,
-                name: categoryName
-            })
-        }).then(response => {
-            if (!response.ok) {
-                throw new Error("Category update failed, status: " + response.status);
-            }
-            return response.json();
-        }).then(data => {
-            // Güncellenen kategorileri yeniden yükleyin
-            getAllCategory();
-
-            // Modal'ı kapat
-            const updateCategoryModal = bootstrap.Modal.getInstance(document.getElementById('updateCategoryModal'));
-            updateCategoryModal.hide();
-        }).catch(error => {
-            console.error('Error: ', error);
         });
     });
 });
+
