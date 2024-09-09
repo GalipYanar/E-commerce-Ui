@@ -1,6 +1,7 @@
 const jwtToken = localStorage.getItem('jwtToken');
 const BASE_PATH = "http://localhost:8080/"
 
+
 function getAllCategory(){
     fetch(BASE_PATH + "category", {
         method: 'GET',
@@ -36,7 +37,7 @@ function displayCategories(categories) {
     });
 }
 
-let selectedCategorytId = null;
+let selectedCategorytId = 0;
 function showDeleteCategoryModal(categoryId){
     selectedCategorytId = categoryId
     const deleteCategoryModal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
@@ -64,15 +65,20 @@ async function deleteCategory(categoryId) {
         });
 
         if(!response.ok){
+            const errorData = await response.json();
+            const errorMessage = errorData.message;
+            showFailAlert(errorMessage);
             throw new Error("Category delete failed : " + response.status);
         }
 
         await getAllCategory();
-        return true;
+        showSuccessAlert("Category deleted successfully")
 
     }catch (error) {
-        showFailAlert("Category delete failed");
         console.log('Error', error.message);
+    }finally{
+        const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteCategoryModal'))
+        deleteModal.hide();
     }
 }
 
@@ -160,7 +166,7 @@ function showSuccessAlert(message) {
             alert.style.opacity = opacity;
             opacity -= opacity * 0.01;
         }, 50);
-    }, 3000);
+    }, 1500);
 }
 
 function showFailAlert(message) {
@@ -181,7 +187,7 @@ function showFailAlert(message) {
             alert.style.opacity = opacity;
             opacity -= opacity * 0.01;
         }, 50);
-    }, 3000);
+    }, 1500);
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -201,12 +207,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             })
         }).then(response => {
             if (!response.ok) {
-                throw new Error("Category create isteği başarısız durum kodu : " + response.status);
+                return response.json().then(errorData => {
+                    const errorMessage = errorData.message || "Failed to create category. It might already exist.";
+                    showFailAlert(errorMessage);
+                    throw new Error(errorMessage);
+                });
             }
             return response.json();
         }).then(category => {
             getAllCategory();
-            showAlert("Category added successfully"); // Doğru mesaj
+            showSuccessAlert("Category created successfully"); // Doğru mesaj
         }).catch(error => {
             console.error('Error:', error);
         });
