@@ -26,23 +26,28 @@ async function addProduct() {
     
 
     formData.append('product', new Blob([JSON.stringify(productData)], { type: 'application/json'}));
-    console.log("post product: ")
-    await fetch(BASE_PATH + "product/create", {
-        method: 'POST',
-        headers: {
-            'Authorization': 'Bearer ' + jwtToken
-        },
-        body: formData
-    }).then(response => {
-        if (!response.ok) {
-            throw new Error("Produc ekleme başarısız durum kodu : " + response.status)
+    
+    try{
+        const response = await fetch(BASE_PATH + "product/create", {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + jwtToken
+            },
+            body: formData
+        });
+
+        if(!response.ok){
+            const errorData = await response.json();
+            showFailAlert(errorData.message || "product create failed");
+            throw new Error("product create failed, status: " + response.status);
         }
+
+        await getAllProduct();
+        showSuccessAlert("product create successfully");
         
-    }).then(data => {
-        console.log(data)
-    }).catch(error => {
-        console.log('Error', error);
-    });
+    }catch (error){
+        console.log('Error: ', error);
+    }
 }
 
 // backend'e istek atıp datayı çekiyoruz, renderProductTable fonksiyonu ile ekrana basıyoruz
@@ -105,6 +110,7 @@ document.getElementById('confirmDeleteButton').addEventListener('click', async (
     if(isDeleted) {
         const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteProductModal'));
         deleteModal.hide();
+        showSuccessAlert("product deleted successfully.");
     }
     selectedProductId = null;
     } 
@@ -121,7 +127,9 @@ async function deleteProduct(productId) {
         });
 
         if(!response.ok){
-            throw new Error("Product delete failed : " + response.status);
+            const errorData = await response.json();
+            showFailAlert(errorData.message || "Product delete failed.");
+            throw new Error("Product delete failed: " + response.status);
         }
 
         await getAllProduct();
@@ -129,6 +137,7 @@ async function deleteProduct(productId) {
 
     }catch (error) {
         console.log('Error', error);
+        showFailAlert("Product delete failed.");
     }
 }
 
@@ -157,6 +166,7 @@ function updateProduct(productId){
 
     }).catch(error => {
         console.error('Error: ', error);
+        showFailAlert("Urun bilgilerini getirirken bir hata oluştu.");
     });
 
 }
@@ -182,8 +192,10 @@ function saveUpdateProduct() {
     };
 
     const formData = new FormData();
-    formData.append('file', feditedSelectedImage = updateProductImage[0]);
-    formData.append('product', new Blob([JSON.stringify(productData)], { type: 'application/json'}));
+    if (updateProductImage) {
+        formData.append('file', updateProductImage);
+    }
+    formData.append('product', new Blob([JSON.stringify(productData)], { type: 'application/json' }));
 
     fetch(BASE_PATH + "product/update", {
         method: 'PUT',
@@ -193,16 +205,60 @@ function saveUpdateProduct() {
         body: formData
     }).then(response => {
         if (!response.ok) {
-            throw new Error("Product update başarısız durum kodu : " + response.status)
+            throw new Error("Product updated failed, status: " + response.status);
         }
+        return response.json();
+    }).then(data => {
         getAllProduct();
         closeUpdateProductModal();
-    }).then(data => {
-        console.log(data)
+        showSuccessAlert("product update successfully.");
     }).catch(error => {
-        console.log('Error', error);
+        console.log('Error:', error);
+        showFailAlert("product update failed.");
     });
 
+}
+
+function showSuccessAlert(message) {
+    let alert = document.getElementById('success-alert');
+    alert.style.display = 'block';
+    alert.style.opacity = 1;
+
+    let alertMessage = document.getElementById('successAlertMessage');
+    alertMessage.textContent = message;
+
+    setTimeout(() => {
+        let opacity = 1;
+        let timer = setInterval(() => {
+            if (opacity <= 0.1) {
+                clearInterval(timer);
+                alert.style.display = 'none';
+            }
+            alert.style.opacity = opacity;
+            opacity -= opacity * 0.01;
+        }, 50);
+    }, 1500);
+}
+
+function showFailAlert(message) {
+    let alert = document.getElementById('fail-alert');
+    alert.style.display = 'block';
+    alert.style.opacity = 1;
+
+    let alertMessage = document.getElementById('failAlertMessage');
+    alertMessage.textContent = message;
+
+    setTimeout(() => {
+        let opacity = 1;
+        let timer = setInterval(() => {
+            if (opacity <= 0.1) {
+                clearInterval(timer);
+                alert.style.display = 'none';
+            }
+            alert.style.opacity = opacity;
+            opacity -= opacity * 0.01;
+        }, 50);
+    }, 1500);
 }
 
 function closeUpdateProductModal(){
