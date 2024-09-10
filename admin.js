@@ -43,6 +43,7 @@ async function addProduct() {
         }
 
         await getAllProduct();
+        closeAddProductModal();
         showSuccessAlert("product create successfully");
         
     }catch (error){
@@ -261,11 +262,48 @@ function showFailAlert(message) {
     }, 1500);
 }
 
+async function loadCategories() {
+    try {
+        const response = await fetch(BASE_PATH + "category", {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + jwtToken
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch categories, status: " + response.status);
+        }
+
+        const categories = await response.json();
+        const categorySelect = document.getElementById('productCategoryId');
+        categorySelect.innerHTML = ''; // Mevcut seçenekleri temizle
+
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.id;
+            option.textContent = category.name;
+            categorySelect.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error("Error loading categories: ", error);
+    }
+}
+
 function closeUpdateProductModal(){
    let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateProductModal'))
    modal.hide();
 }
 
+function closeAddProductModal(){
+   let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addProductModal'))
+   modal.hide();
+}
+
+
 document.addEventListener("DOMContentLoaded", async() => {
     await getAllProduct();
+    await loadCategories();
 });

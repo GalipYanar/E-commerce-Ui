@@ -175,6 +175,7 @@ function orderNow() {
         }
     }).then(response => {
         if (!response.ok) {
+            
             throw new Error("Order isteği başarısız durum kodu : " + response.status)
         }
         return response.json()
